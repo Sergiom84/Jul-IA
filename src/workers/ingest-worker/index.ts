@@ -69,13 +69,6 @@ async function claimNext(): Promise<SourceRow | null> {
   return rows[0] ?? null;
 }
 
-async function markReady(id: string, chunkCount: number) {
-  await sql`
-    update public.sources
-    set status = 'ready', chunk_count = ${chunkCount}, error = null, locked_at = null
-    where id = ${id}`;
-}
-
 async function markFailure(row: SourceRow, message: string) {
   if (row.attempt_count >= MAX_ATTEMPTS) {
     await sql`
@@ -123,18 +116,24 @@ async function processSource(row: SourceRow) {
     }
   }
 
-  // Reemplaza chunks previos (reproceso idempotente) e inserta los nuevos.
-  await sql`delete from public.source_chunks where source_id = ${row.id}`;
-  for (const c of chunks) {
-    const literal = `[${c.embedding.join(",")}]`;
-    await sql`
-      insert into public.source_chunks
-        (source_id, user_id, chunk_index, content, token_count, embedding)
-      values (${row.id}, ${row.user_id}, ${c.index}, ${c.content},
-              ${c.tokenCount}, ${literal}::extensions.vector)`;
-  }
-
-  await markReady(row.id, chunks.length);
+  // Atómico: borra chunks previos, inserta los nuevos y marca ready en una sola
+  // transacción. Si algo falla, rollback → nunca quedan chunks parciales ni una
+  // fuente marcada 'ready' a medias.
+  await sql.begin(async (tx) => {
+    await tx`delete from public.source_chunks where source_id = ${row.id}`;
+    for (const c of chunks) {
+      const literal = `[${c.embedding.join(",")}]`;
+      await tx`
+        insert into public.source_chunks
+          (source_id, user_id, chunk_index, content, token_count, embedding)
+        values (${row.id}, ${row.user_id}, ${c.index}, ${c.content},
+                ${c.tokenCount}, ${literal}::extensions.vector)`;
+    }
+    await tx`
+      update public.sources
+      set status = 'ready', chunk_count = ${chunks.length}, error = null, locked_at = null
+      where id = ${row.id}`;
+  });
   console.log(`[worker] ${row.id} listo · ${chunks.length} fragmentos`);
 }
 

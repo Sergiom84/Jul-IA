@@ -34,6 +34,9 @@ export default function DocumentsPanel() {
   }, []);
 
   useEffect(() => {
+    // Carga inicial de fuentes al montar (fetch async; el setState ocurre tras
+    // la red, no de forma síncrona). Patrón estándar de data-fetch en efecto.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 

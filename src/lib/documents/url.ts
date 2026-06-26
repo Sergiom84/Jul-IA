@@ -35,7 +35,7 @@ export function isAllowedUrl(raw: string): boolean {
   } catch {
     return false;
   }
-  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+  if (url.protocol !== "https:") return false; // solo https
   const host = url.hostname.toLowerCase();
   return allowlist().some(
     (base) => host === base || host.endsWith(`.${base}`),
@@ -110,6 +110,10 @@ export async function fetchUrlContent(raw: string): Promise<FetchedUrl> {
     headers: { "user-agent": "jul-IA/1.0 (+reference indexer)" },
     redirect: "follow",
   });
+  // Revalida la URL FINAL: un redirect pudo salir de la allowlist.
+  if (res.url && !isAllowedUrl(res.url)) {
+    throw new Error("La URL redirige a un dominio no permitido.");
+  }
   if (!res.ok) throw new Error(`Descarga fallida (HTTP ${res.status}).`);
 
   const contentType = res.headers.get("content-type") ?? "";

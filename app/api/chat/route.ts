@@ -110,6 +110,17 @@ export async function POST(request: NextRequest) {
         .update({ updated_at: new Date().toISOString() })
         .eq("id", conversationId);
     },
+    onError: async ({ error }) => {
+      // Si el stream falla, no perder el turno: deja un assistant 'incomplete'.
+      console.error("streamText error:", error);
+      await supabase.from("messages").insert({
+        conversation_id: conversationId,
+        role: "assistant",
+        content: "⚠️ La respuesta se interrumpió. Vuelve a intentarlo.",
+        status: "incomplete",
+        citations,
+      });
+    },
   });
 
   return result.toTextStreamResponse({

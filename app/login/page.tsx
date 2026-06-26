@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Scale } from "lucide-react";
 import { getBrowserClient } from "@/src/lib/supabase/browser";
+import { sanitizeNextPath } from "@/src/lib/safe-path";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
@@ -17,7 +18,7 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/chat";
+  const next = sanitizeNextPath(params.get("next"));
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");

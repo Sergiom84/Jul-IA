@@ -12,7 +12,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "worker:ingest": "tsx src/workers/ingest-worker/index.ts",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "test": "node --import tsx --test src/lib/safe-path.test.ts src/lib/documents/url.test.ts src/lib/documents/chunk.test.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.0",
@@ -35,6 +36,8 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.9",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
