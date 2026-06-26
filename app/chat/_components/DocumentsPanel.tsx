@@ -26,7 +26,7 @@ const TABS: { key: SourceCategory; label: string; hint: string }[] = [
   {
     key: "upload",
     label: "Documentos subidos",
-    hint: "Documentos sueltos que subes para gestión puntual (p.ej. una factura).",
+    hint: "Documentos sueltos (p.ej. una factura subida en el chat). NO se usan para responder; muévelos a «Fuente de conocimiento» con el lápiz para incluirlos en el RAG.",
   },
 ];
 const STATUS_LABEL: Record<Source["status"], string> = {
