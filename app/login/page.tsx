@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Scale } from "lucide-react";
 import { getBrowserClient } from "@/src/lib/supabase/browser";
 import { sanitizeNextPath } from "@/src/lib/safe-path";
+import { registerUser } from "./actions";
 import styles from "./login.module.css";
 
 export default function LoginPage() {
@@ -23,42 +24,55 @@ function LoginForm() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  function switchMode(next: "signin" | "signup") {
+    setMode(next);
+    setError(null);
+    setNotice(null);
+    setConfirmPassword("");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setNotice(null);
+
+    // Validación de confirmación de contraseña en registro.
+    if (mode === "signup") {
+      if (password !== confirmPassword) {
+        setError("Las contraseñas no coinciden.");
+        return;
+      }
+      if (password.length < 6) {
+        setError("La contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+    }
+
     setLoading(true);
     const supabase = getBrowserClient();
 
     try {
-      if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        router.push(next);
-        router.refresh();
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        if (data.session) {
-          router.push(next);
-          router.refresh();
-        } else {
-          setNotice(
-            "Cuenta creada. Revisa tu correo para confirmar y luego inicia sesión.",
-          );
-          setMode("signin");
+      if (mode === "signup") {
+        // Registro auto-confirmado en servidor (no depende de email).
+        const res = await registerUser(email, password);
+        if (!res.ok) {
+          setError(res.error);
+          return;
         }
       }
+      // En ambos casos terminamos iniciando sesión con email+contraseña.
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      router.push(next);
+      router.refresh();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "No se pudo completar la acción.",
@@ -127,6 +141,25 @@ function LoginForm() {
             />
           </div>
 
+          {mode === "signup" && (
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="confirmPassword">
+                Repite la contraseña
+              </label>
+              <input
+                id="confirmPassword"
+                className="input"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={6}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className={`btn btn-primary ${styles.submit}`}
@@ -144,12 +177,12 @@ function LoginForm() {
           {mode === "signin" ? (
             <>
               ¿No tienes cuenta?{" "}
-              <button onClick={() => setMode("signup")}>Regístrate</button>
+              <button onClick={() => switchMode("signup")}>Regístrate</button>
             </>
           ) : (
             <>
               ¿Ya tienes cuenta?{" "}
-              <button onClick={() => setMode("signin")}>Inicia sesión</button>
+              <button onClick={() => switchMode("signin")}>Inicia sesión</button>
             </>
           )}
         </div>
