@@ -16,10 +16,12 @@
   z-index: var(--z-drawer);
 }
 .sidebarHeader {
+  height: var(--header-height);
+  min-height: var(--header-height);
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4);
+  padding: 0 var(--space-4);
   border-bottom: 1px solid var(--border);
 }
 .logo {

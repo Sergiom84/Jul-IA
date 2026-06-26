@@ -35,6 +35,13 @@ const GREETINGS = [
   "¿Cómo ha ido pilates?",
   "Hoy es un gran día para ser feliz",
   "Hola Julliett",
+  "Hola parce",
+  "¡Q'hubo!",
+  "¿Qué más, pues?",
+  "¿Todo bien?",
+  "¿Bien o no?",
+  "¡Hágale, pues!",
+  "Hola, mor, ¿cómo estás, pues?",
 ];
 
 const UPLOAD_ACCEPT = ".pdf,.docx,.txt,.md";
@@ -100,6 +107,8 @@ export default function ChatWindow({
     for (const file of Array.from(files)) {
       const form = new FormData();
       form.append("file", file);
+      // Lo subido dentro de una conversación va a "Documentos subidos".
+      form.append("category", "upload");
       try {
         const res = await fetch("/api/sources", { method: "POST", body: form });
         if (!res.ok) {

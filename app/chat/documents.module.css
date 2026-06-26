@@ -166,6 +166,61 @@
   background: var(--surface-2);
 }
 
+/* Menú de acciones (lápiz): Ver / Descargar / Mover */
+.itemAction {
+  background: none;
+  border: none;
+  color: var(--text-subtle);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.itemAction:hover {
+  color: var(--brand-600);
+  background: var(--surface-2);
+}
+.itemMenuWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+}
+.itemMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: var(--z-drawer);
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--text);
+}
+.menuItem:hover {
+  background: var(--brand-050);
+  color: var(--brand-600);
+}
+
 .error {
   background: #fdecec;
   color: var(--danger);

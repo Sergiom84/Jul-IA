@@ -14,12 +14,39 @@ function safeName(name: string): string {
   return name.replace(/[^\w.\-]+/g, "_").slice(-120) || "archivo";
 }
 
-// GET: lista las fuentes del usuario.
-export async function GET() {
+// GET: lista las fuentes del usuario, o (con ?id=) devuelve una URL firmada
+// para ver/descargar el documento (?download=1 fuerza la descarga).
+export async function GET(request: NextRequest) {
   const user = await getUser();
   if (!user) return new NextResponse("No autenticado", { status: 401 });
 
   const supabase = await getServerClient();
+  const id = request.nextUrl.searchParams.get("id");
+
+  if (id) {
+    const { data: src, error } = await supabase
+      .from("sources")
+      .select("storage_path, file_name, url")
+      .eq("id", id)
+      .single();
+    if (error || !src) return new NextResponse("No encontrado", { status: 404 });
+    // Fuentes tipo URL: se abren en su propia dirección.
+    if (src.url && !src.storage_path) return NextResponse.json({ url: src.url });
+    if (!src.storage_path) {
+      return new NextResponse("Sin fichero asociado", { status: 404 });
+    }
+    const download = request.nextUrl.searchParams.get("download") === "1";
+    const { data: signed, error: signErr } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(src.storage_path, 120, {
+        download: download ? src.file_name ?? true : undefined,
+      });
+    if (signErr || !signed) {
+      return new NextResponse(signErr?.message ?? "Error", { status: 500 });
+    }
+    return NextResponse.json({ url: signed.signedUrl });
+  }
+
   const { data, error } = await supabase
     .from("sources")
     .select(
@@ -137,7 +164,8 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(data);
 }
 
-// PATCH ?id= : reprocesa una fuente (p.ej. tras un error). La reencola y dispara.
+// PATCH ?id= : reprocesa una fuente (reencola y dispara), o con ?category=
+// la mueve de pestaña (knowledge <-> upload) sin reprocesar.
 export async function PATCH(request: NextRequest) {
   const user = await getUser();
   if (!user) return new NextResponse("No autenticado", { status: 401 });
@@ -146,6 +174,20 @@ export async function PATCH(request: NextRequest) {
   if (!id) return new NextResponse("Falta id", { status: 400 });
 
   const supabase = await getServerClient();
+  const categoryParam = request.nextUrl.searchParams.get("category");
+
+  // Mover de pestaña: solo actualiza la categoría.
+  if (categoryParam === "knowledge" || categoryParam === "upload") {
+    const { data, error } = await supabase
+      .from("sources")
+      .update({ category: categoryParam })
+      .eq("id", id)
+      .select(SOURCE_SELECT)
+      .single();
+    if (error) return new NextResponse(error.message, { status: 500 });
+    return NextResponse.json(data);
+  }
+
   const { data, error } = await supabase
     .from("sources")
     .update({ status: "uploaded", error: null, next_attempt_at: null })

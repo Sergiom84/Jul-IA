@@ -8,6 +8,10 @@ import {
   Trash2,
   Link as LinkIcon,
   RotateCw,
+  Pencil,
+  Eye,
+  Download,
+  FolderInput,
 } from "lucide-react";
 import type { Source, SourceCategory } from "@/src/lib/types";
 import styles from "../documents.module.css";
@@ -46,6 +50,7 @@ export default function DocumentsPanel() {
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState("");
   const [addingUrl, setAddingUrl] = useState(false);
+  const [menuId, setMenuId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Documentos antiguos sin categoría se tratan como base de conocimiento.
@@ -123,6 +128,29 @@ export default function DocumentsPanel() {
     if (!confirm("¿Eliminar este documento y su análisis?")) return;
     await fetch(`/api/sources?id=${id}`, { method: "DELETE" });
     setSources((prev) => prev.filter((s) => s.id !== id));
+  }
+
+  // Abre el documento (URL firmada). download=true fuerza la descarga.
+  async function openSource(id: string, download: boolean) {
+    setMenuId(null);
+    const res = await fetch(
+      `/api/sources?id=${id}${download ? "&download=1" : ""}`,
+    );
+    if (!res.ok) {
+      setError(await res.text());
+      return;
+    }
+    const { url: signed } = (await res.json()) as { url: string };
+    window.open(signed, "_blank", "noopener,noreferrer");
+  }
+
+  // Mueve un documento entre pestañas (conocimiento <-> subidos).
+  async function moveCategory(id: string, category: SourceCategory) {
+    setMenuId(null);
+    await fetch(`/api/sources?id=${id}&category=${category}`, {
+      method: "PATCH",
+    });
+    await load();
   }
 
   async function retry(id: string) {
@@ -253,6 +281,47 @@ export default function DocumentsPanel() {
                   <RotateCw size={16} />
                 </button>
               )}
+              <div className={styles.itemMenuWrap}>
+                <button
+                  className={styles.itemAction}
+                  onClick={() => setMenuId(menuId === s.id ? null : s.id)}
+                  aria-label="Editar"
+                  title="Ver / editar"
+                >
+                  <Pencil size={16} />
+                </button>
+                {menuId === s.id && (
+                  <>
+                    <div
+                      className={styles.menuBackdrop}
+                      onClick={() => setMenuId(null)}
+                    />
+                    <div className={styles.itemMenu}>
+                      <button
+                        className={styles.menuItem}
+                        onClick={() => openSource(s.id, false)}
+                      >
+                        <Eye size={15} /> Ver
+                      </button>
+                      {(s.category ?? "knowledge") === "upload" ? (
+                        <button
+                          className={styles.menuItem}
+                          onClick={() => moveCategory(s.id, "knowledge")}
+                        >
+                          <FolderInput size={15} /> Mover a Fuente de conocimiento
+                        </button>
+                      ) : (
+                        <button
+                          className={styles.menuItem}
+                          onClick={() => openSource(s.id, true)}
+                        >
+                          <Download size={15} /> Descargar
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               <button
                 className={styles.itemDelete}
                 onClick={() => remove(s.id)}
