@@ -1,0 +1,94 @@
+/* ============================================================
+   Design tokens — jul-IA
+   Paleta sobria y profesional para un asesor fiscal/laboral.
+   ============================================================ */
+:root {
+  /* Marca */
+  --brand-600: #0f6f5c;
+  --brand-500: #138a72;
+  --brand-400: #21a98c;
+  --brand-050: #e7f5f1;
+
+  --accent-600: #1d4ed8;
+  --accent-050: #e8eefc;
+
+  /* Neutros */
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --surface-3: #e7eaef;
+  --border: #dfe3ea;
+  --border-strong: #c7ccd6;
+
+  --text: #11161d;
+  --text-muted: #5b6573;
+  --text-subtle: #8a92a0;
+  --on-brand: #ffffff;
+
+  /* Estados */
+  --success: #15803d;
+  --warning: #b45309;
+  --danger: #b91c1c;
+  --info: #1d4ed8;
+
+  /* Tipografía */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+
+  /* Radios */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(17, 22, 29, 0.06);
+  --shadow-md: 0 4px 16px rgba(17, 22, 29, 0.08);
+  --shadow-lg: 0 12px 32px rgba(17, 22, 29, 0.14);
+
+  /* Layout */
+  --sidebar-width: 280px;
+  --header-height: 56px;
+  --composer-max: 820px;
+
+  /* Áreas seguras móvil */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --z-drawer: 40;
+  --z-overlay: 30;
+  --z-header: 20;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-2: #1c232c;
+    --surface-3: #232c37;
+    --border: #2a323d;
+    --border-strong: #3a4452;
+
+    --text: #e9edf2;
+    --text-muted: #9aa4b2;
+    --text-subtle: #6b7686;
+
+    --brand-050: #10241f;
+    --accent-050: #15203a;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  }
+}

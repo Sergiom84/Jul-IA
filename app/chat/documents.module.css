@@ -1,0 +1,141 @@
+.panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-4);
+}
+.inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.head {
+  margin-bottom: var(--space-5);
+}
+.head h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 20px;
+}
+.head p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.dropzone {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--surface);
+  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+}
+.dropzoneActive {
+  border-color: var(--brand-500);
+  background: var(--brand-050);
+}
+.dropIcon {
+  color: var(--brand-500);
+  margin-bottom: var(--space-2);
+}
+.dropHint {
+  font-size: 12px;
+  color: var(--text-subtle);
+  margin-top: var(--space-2);
+}
+
+.urlRow {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.urlRow .input {
+  flex: 1;
+}
+@media (max-width: 560px) {
+  .urlRow {
+    flex-direction: column;
+  }
+}
+
+.list {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.itemIcon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+.itemName {
+  font-weight: 600;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.itemMeta {
+  font-size: 12px;
+  color: var(--text-subtle);
+}
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+.badgeReady {
+  background: #e6f4ea;
+  color: var(--success);
+}
+.badgeProcessing {
+  background: #fef3e2;
+  color: var(--warning);
+}
+.badgeError {
+  background: #fdecec;
+  color: var(--danger);
+}
+.badgeUploaded {
+  background: var(--surface-3);
+  color: var(--text-muted);
+}
+.itemDelete {
+  background: none;
+  border: none;
+  color: var(--text-subtle);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.itemDelete:hover {
+  color: var(--danger);
+  background: var(--surface-2);
+}
+
+.error {
+  background: #fdecec;
+  color: var(--danger);
+  border: 1px solid #f5c2c2;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-top: var(--space-3);
+}
