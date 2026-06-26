@@ -1,20 +1,9 @@
 "use server";
 
 import { getAdminClient } from "@/src/lib/supabase/admin";
+import { isSignupAllowed } from "@/src/lib/signup-policy";
 
 type Result = { ok: true } | { ok: false; error: string };
-
-// Registro abierto solo si ALLOW_PUBLIC_SIGNUP=true; en caso contrario, únicamente
-// los correos de SIGNUP_ALLOWLIST (coma-separado) pueden darse de alta. Por defecto
-// el registro está CERRADO (seguro en producción).
-function canSignup(mail: string): boolean {
-  if (process.env.ALLOW_PUBLIC_SIGNUP === "true") return true;
-  const allow = (process.env.SIGNUP_ALLOWLIST ?? "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  return allow.includes(mail);
-}
 
 /**
  * Registro con auto-confirmación en servidor (no depende del email de Supabase).
@@ -31,7 +20,11 @@ export async function registerUser(
   if (password.length < 6) {
     return { ok: false, error: "La contraseña debe tener al menos 6 caracteres." };
   }
-  if (!canSignup(mail)) {
+  const allowed = isSignupAllowed(mail, {
+    allowPublic: process.env.ALLOW_PUBLIC_SIGNUP === "true",
+    allowlistCsv: process.env.SIGNUP_ALLOWLIST,
+  });
+  if (!allowed) {
     return {
       ok: false,
       error: "El registro no está abierto. Solicita acceso al administrador.",

@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "worker:ingest": "tsx src/workers/ingest-worker/index.ts",
     "lint": "eslint .",
-    "test": "node --import tsx --test src/lib/safe-path.test.ts src/lib/documents/url.test.ts src/lib/documents/chunk.test.ts"
+    "test": "node --import tsx --test src/lib/safe-path.test.ts src/lib/signup-policy.test.ts src/lib/documents/url.test.ts src/lib/documents/chunk.test.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.0",
