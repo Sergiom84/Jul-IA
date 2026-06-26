@@ -9,10 +9,22 @@ import {
   Link as LinkIcon,
   RotateCw,
 } from "lucide-react";
-import type { Source } from "@/src/lib/types";
+import type { Source, SourceCategory } from "@/src/lib/types";
 import styles from "../documents.module.css";
 
 const ACCEPT = ".pdf,.docx,.txt,.md";
+const TABS: { key: SourceCategory; label: string; hint: string }[] = [
+  {
+    key: "knowledge",
+    label: "Fuente de conocimiento",
+    hint: "Documentos y enlaces que jul-IA usa para responder (RAG).",
+  },
+  {
+    key: "upload",
+    label: "Documentos subidos",
+    hint: "Documentos sueltos que subes para gestión puntual (p.ej. una factura).",
+  },
+];
 const STATUS_LABEL: Record<Source["status"], string> = {
   uploaded: "En cola",
   processing: "Procesando",
@@ -28,12 +40,16 @@ const STATUS_CLASS: Record<Source["status"], string> = {
 
 export default function DocumentsPanel() {
   const [sources, setSources] = useState<Source[]>([]);
+  const [tab, setTab] = useState<SourceCategory>("knowledge");
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState("");
   const [addingUrl, setAddingUrl] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Documentos antiguos sin categoría se tratan como base de conocimiento.
+  const visible = sources.filter((s) => (s.category ?? "knowledge") === tab);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/sources");
@@ -64,6 +80,7 @@ export default function DocumentsPanel() {
       for (const file of Array.from(files)) {
         const form = new FormData();
         form.append("file", file);
+        form.append("category", tab);
         const res = await fetch("/api/sources", {
           method: "POST",
           body: form,
@@ -89,7 +106,7 @@ export default function DocumentsPanel() {
       const res = await fetch("/api/sources", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: value }),
+        body: JSON.stringify({ url: value, category: tab }),
       });
       if (!res.ok) {
         setError(await res.text());
@@ -122,6 +139,26 @@ export default function DocumentsPanel() {
         <div className={styles.head}>
           <h2>Documentos y fuentes</h2>
         </div>
+
+        <div className={styles.tabs} role="tablist">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`${styles.tab} ${tab === t.key ? styles.tabActive : ""}`}
+              onClick={() => {
+                setTab(t.key);
+                setError(null);
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className={styles.tabHint}>
+          {TABS.find((t) => t.key === tab)?.hint}
+        </p>
 
         <div
           className={`${styles.dropzone} ${dragOver ? styles.dropzoneActive : ""}`}
@@ -157,27 +194,34 @@ export default function DocumentsPanel() {
           />
         </div>
 
-        <form className={styles.urlRow} onSubmit={addUrl}>
-          <input
-            className="input"
-            type="url"
-            placeholder="https://www.boe.es/... (fuentes oficiales)"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="btn btn-subtle"
-            disabled={!url.trim() || addingUrl}
-          >
-            <LinkIcon size={16} /> {addingUrl ? "Añadiendo…" : "Añadir URL"}
-          </button>
-        </form>
+        {tab === "knowledge" && (
+          <form className={styles.urlRow} onSubmit={addUrl}>
+            <input
+              className="input"
+              type="url"
+              placeholder="https://www.boe.es/... (fuentes oficiales)"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="btn btn-subtle"
+              disabled={!url.trim() || addingUrl}
+            >
+              <LinkIcon size={16} /> {addingUrl ? "Añadiendo…" : "Añadir URL"}
+            </button>
+          </form>
+        )}
 
         {error && <div className={styles.error}>{error}</div>}
 
         <div className={styles.list}>
-          {sources.map((s) => (
+          {visible.length === 0 && (
+            <div className={styles.emptyList}>
+              Aún no hay documentos en esta sección.
+            </div>
+          )}
+          {visible.map((s) => (
             <div key={s.id} className={styles.item}>
               {s.type === "document" ? (
                 <FileText size={20} className={styles.itemIcon} />

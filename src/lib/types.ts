@@ -25,10 +25,13 @@ export type Conversation = {
 
 export type SourceType = "document" | "url" | "official_site";
 export type SourceStatus = "uploaded" | "processing" | "ready" | "error";
+// Pestañas: base de conocimiento (RAG) vs documentos subidos (gestión puntual).
+export type SourceCategory = "knowledge" | "upload";
 
 export type Source = {
   id: string;
   type: SourceType;
+  category: SourceCategory;
   title: string | null;
   file_name: string | null;
   mime_type: string | null;

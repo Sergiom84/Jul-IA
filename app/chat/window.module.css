@@ -141,6 +141,28 @@
   text-decoration: underline;
 }
 
+.bubbleActions {
+  margin-top: var(--space-3);
+  display: flex;
+  justify-content: flex-end;
+}
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.copyBtn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
 .sources {
   margin-top: var(--space-3);
   display: flex;

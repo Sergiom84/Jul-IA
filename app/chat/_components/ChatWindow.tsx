@@ -24,6 +24,8 @@ import Waves from "./Waves";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import QuickActions from "./QuickActions";
+import CopyButton from "./CopyButton";
+import MicButton from "./MicButton";
 import styles from "../window.module.css";
 
 // Saludo del estado vacío: cambia aleatoriamente en cada carga.
@@ -157,6 +159,12 @@ export default function ChatWindow({
     if (!ta) return;
     ta.style.height = "auto";
     ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+  }
+
+  // Añade al cuadro lo dictado por voz (separado por un espacio) y reajusta alto.
+  function appendDictation(text: string) {
+    setInput((cur) => (cur.trim() ? `${cur.trimEnd()} ${text}` : text));
+    requestAnimationFrame(autoGrow);
   }
 
   // Acciones rápidas: insertan (reemplazan) o añaden texto al cuadro y enfocan.
@@ -375,6 +383,7 @@ export default function ChatWindow({
           >
             <Globe size={18} />
           </button>
+          <MicButton onText={appendDictation} />
           <textarea
             ref={taRef}
             className={styles.textarea}
@@ -455,6 +464,11 @@ function MessageRow({
                 <FileText size={12} /> {c.title}
               </span>
             ))}
+          </div>
+        )}
+        {!isUser && message.status === "complete" && message.content && (
+          <div className={styles.bubbleActions}>
+            <CopyButton text={message.content} />
           </div>
         )}
       </div>

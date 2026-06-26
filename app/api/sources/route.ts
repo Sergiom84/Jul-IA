@@ -23,7 +23,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("sources")
     .select(
-      "id, type, title, file_name, mime_type, url, status, error, chunk_count, created_at",
+      "id, type, category, title, file_name, mime_type, url, status, error, chunk_count, created_at",
     )
     .order("created_at", { ascending: false });
 
@@ -32,7 +32,12 @@ export async function GET() {
 }
 
 const SOURCE_SELECT =
-  "id, type, title, file_name, mime_type, url, status, error, chunk_count, created_at";
+  "id, type, category, title, file_name, mime_type, url, status, error, chunk_count, created_at";
+
+// Normaliza la categoría recibida (pestaña); por defecto base de conocimiento.
+function parseCategory(v: FormDataEntryValue | string | null): "knowledge" | "upload" {
+  return v === "upload" ? "upload" : "knowledge";
+}
 
 // POST: documento (multipart) o URL de referencia (JSON {url}). status uploaded.
 export async function POST(request: NextRequest) {
@@ -41,7 +46,10 @@ export async function POST(request: NextRequest) {
 
   // --- Rama URL de referencia (JSON) ---
   if (request.headers.get("content-type")?.includes("application/json")) {
-    const { url } = (await request.json()) as { url?: string };
+    const { url, category } = (await request.json()) as {
+      url?: string;
+      category?: string;
+    };
     if (!url?.trim()) return new NextResponse("Falta la URL", { status: 400 });
     if (!isAllowedUrl(url.trim())) {
       return new NextResponse(
@@ -55,6 +63,7 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         type: "url",
+        category: parseCategory(category ?? null),
         title: url.trim(),
         url: url.trim(),
         status: "uploaded",
@@ -105,6 +114,7 @@ export async function POST(request: NextRequest) {
       id: sourceId,
       user_id: user.id,
       type: "document",
+      category: parseCategory(form.get("category")),
       title: file.name,
       file_name: fileName,
       mime_type: file.type || null,
@@ -112,7 +122,7 @@ export async function POST(request: NextRequest) {
       status: "uploaded",
     })
     .select(
-      "id, type, title, file_name, mime_type, url, status, error, chunk_count, created_at",
+      "id, type, category, title, file_name, mime_type, url, status, error, chunk_count, created_at",
     )
     .single();
 
