@@ -220,6 +220,11 @@
   background: var(--brand-050);
   color: var(--brand-600);
 }
+.menuNote {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-subtle);
+}
 
 .error {
   background: #fdecec;

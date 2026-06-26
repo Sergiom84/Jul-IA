@@ -303,19 +303,27 @@ export default function DocumentsPanel() {
                       >
                         <Eye size={15} /> Ver
                       </button>
+                      <button
+                        className={styles.menuItem}
+                        onClick={() => openSource(s.id, true)}
+                      >
+                        <Download size={15} /> Descargar
+                      </button>
                       {(s.category ?? "knowledge") === "upload" ? (
                         <button
                           className={styles.menuItem}
                           onClick={() => moveCategory(s.id, "knowledge")}
                         >
                           <FolderInput size={15} /> Mover a Fuente de conocimiento
+                          <span className={styles.menuNote}>(entra en el RAG)</span>
                         </button>
                       ) : (
                         <button
                           className={styles.menuItem}
-                          onClick={() => openSource(s.id, true)}
+                          onClick={() => moveCategory(s.id, "upload")}
                         >
-                          <Download size={15} /> Descargar
+                          <FolderInput size={15} /> Mover a Documentos subidos
+                          <span className={styles.menuNote}>(sale del RAG)</span>
                         </button>
                       )}
                     </div>
