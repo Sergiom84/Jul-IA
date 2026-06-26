@@ -289,3 +289,63 @@
   color: var(--text-subtle);
   text-align: center;
 }
+
+/* --- Adjuntos en el chat --- */
+.attachments {
+  max-width: var(--composer-max);
+  margin: 0 auto var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 4px 6px 4px 10px;
+  font-size: 12px;
+  max-width: 100%;
+}
+.attName {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+.attStatus {
+  color: var(--text-subtle);
+}
+.attReady {
+  color: var(--success);
+}
+.attError {
+  color: var(--danger);
+}
+.attSpin {
+  color: var(--brand-500);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.attClose {
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.attClose:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}

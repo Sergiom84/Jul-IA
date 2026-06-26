@@ -1,9 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest, after } from "next/server";
 import { getServerClient, getUser } from "@/src/lib/supabase/server";
 import { getAdminClient } from "@/src/lib/supabase/admin";
 import { STORAGE_BUCKET } from "@/src/lib/supabase/config";
 import { isSupported, SUPPORTED_EXTENSIONS } from "@/src/lib/documents/extract";
 import { isAllowedUrl, allowedDomainsLabel } from "@/src/lib/documents/url";
+import { processSourceInline } from "@/src/lib/ingest/web-ingest";
 
 export const runtime = "nodejs";
 
@@ -61,6 +62,9 @@ export async function POST(request: NextRequest) {
       .select(SOURCE_SELECT)
       .single();
     if (error) return new NextResponse(error.message, { status: 500 });
+    // Procesa la URL en segundo plano (tras responder), sin worker aparte.
+    const urlId = (data as { id: string }).id;
+    after(() => processSourceInline(urlId));
     return NextResponse.json(data);
   }
 
@@ -118,6 +122,8 @@ export async function POST(request: NextRequest) {
     return new NextResponse(error.message, { status: 500 });
   }
 
+  // Procesa el documento en segundo plano (tras responder), sin worker aparte.
+  after(() => processSourceInline(sourceId));
   return NextResponse.json(data);
 }
 

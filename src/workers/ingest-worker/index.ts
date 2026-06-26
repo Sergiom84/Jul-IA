@@ -5,12 +5,7 @@
 import "./env"; // DEBE ir primero: carga el entorno antes de leer config.
 import postgres from "postgres";
 import { getAdminClient } from "../../lib/supabase/admin";
-import { STORAGE_BUCKET } from "../../lib/supabase/config";
-import {
-  buildEmbeddedChunks,
-  buildEmbeddedChunksFromText,
-} from "../../lib/ingest/pipeline";
-import { fetchUrlContent } from "../../lib/documents/url";
+import { runIngest } from "../../lib/ingest/process-source";
 
 const POLL_MS = Number(process.env.INGEST_POLL_INTERVAL_MS ?? 3000);
 const MAX_ATTEMPTS = Number(process.env.INGEST_MAX_ATTEMPTS ?? 3);
@@ -90,51 +85,8 @@ async function markFailure(row: SourceRow, message: string) {
 }
 
 async function processSource(row: SourceRow) {
-  let chunks;
-
-  if (row.type === "document") {
-    if (!row.storage_path) throw new Error("Sin storage_path");
-    const { data, error } = await storage
-      .from(STORAGE_BUCKET)
-      .download(row.storage_path);
-    if (error || !data) throw new Error(`Descarga fallida: ${error?.message}`);
-    const buffer = Buffer.from(await data.arrayBuffer());
-    chunks = await buildEmbeddedChunks(
-      row.file_name ?? "documento",
-      buffer,
-      MAX_CHUNK_CHARS,
-    );
-  } else {
-    // URL de referencia: descarga (allowlist) + limpieza HTML → texto.
-    if (!row.url) throw new Error("Sin url");
-    const { text, title } = await fetchUrlContent(row.url);
-    if (!text) throw new Error("La URL no devolvió texto indexable.");
-    chunks = await buildEmbeddedChunksFromText(text, MAX_CHUNK_CHARS);
-    // Si no había título, usa el de la página descargada.
-    if (!row.title && title) {
-      await sql`update public.sources set title = ${title} where id = ${row.id}`;
-    }
-  }
-
-  // Atómico: borra chunks previos, inserta los nuevos y marca ready en una sola
-  // transacción. Si algo falla, rollback → nunca quedan chunks parciales ni una
-  // fuente marcada 'ready' a medias.
-  await sql.begin(async (tx) => {
-    await tx`delete from public.source_chunks where source_id = ${row.id}`;
-    for (const c of chunks) {
-      const literal = `[${c.embedding.join(",")}]`;
-      await tx`
-        insert into public.source_chunks
-          (source_id, user_id, chunk_index, content, token_count, embedding)
-        values (${row.id}, ${row.user_id}, ${c.index}, ${c.content},
-                ${c.tokenCount}, ${literal}::extensions.vector)`;
-    }
-    await tx`
-      update public.sources
-      set status = 'ready', chunk_count = ${chunks.length}, error = null, locked_at = null
-      where id = ${row.id}`;
-  });
-  console.log(`[worker] ${row.id} listo · ${chunks.length} fragmentos`);
+  const n = await runIngest(row, sql, storage, MAX_CHUNK_CHARS);
+  console.log(`[worker] ${row.id} listo · ${n} fragmentos`);
 }
 
 let running = true;

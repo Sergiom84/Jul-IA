@@ -7,7 +7,17 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { Scale, Send, FileText, Globe } from "lucide-react";
+import {
+  Scale,
+  Send,
+  FileText,
+  Globe,
+  Paperclip,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  X,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Citation, Message } from "@/src/lib/types";
@@ -18,6 +28,14 @@ const SUGGESTIONS = [
   "Resume las obligaciones de una nómina según el documento que subí.",
   "¿Cuándo se presenta el modelo 303 y qué incluye?",
 ];
+
+const UPLOAD_ACCEPT = ".pdf,.docx,.txt,.md";
+
+type Attachment = {
+  id: string;
+  name: string;
+  status: "uploaded" | "processing" | "ready" | "error";
+};
 
 let tempId = 0;
 const nextTempId = () => `temp-${Date.now()}-${tempId++}`;
@@ -38,8 +56,62 @@ export default function ChatWindow({
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [webSearch, setWebSearch] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // Sube documentos adjuntados desde el chat y los añade a la biblioteca.
+  async function handleAttach(files: FileList | File[]) {
+    for (const file of Array.from(files)) {
+      const form = new FormData();
+      form.append("file", file);
+      try {
+        const res = await fetch("/api/sources", { method: "POST", body: form });
+        if (!res.ok) {
+          setAttachments((p) => [
+            ...p,
+            { id: `err-${Date.now()}`, name: file.name, status: "error" },
+          ]);
+          continue;
+        }
+        const src = (await res.json()) as { id: string; status: Attachment["status"] };
+        setAttachments((p) => [
+          ...p,
+          { id: src.id, name: file.name, status: src.status },
+        ]);
+      } catch {
+        setAttachments((p) => [
+          ...p,
+          { id: `err-${Date.now()}`, name: file.name, status: "error" },
+        ]);
+      }
+    }
+  }
+
+  // Polling del estado de los adjuntos mientras se procesan.
+  useEffect(() => {
+    const pending = attachments.some(
+      (a) => a.status === "uploaded" || a.status === "processing",
+    );
+    if (!pending) return;
+    const t = setInterval(async () => {
+      try {
+        const res = await fetch("/api/sources");
+        if (!res.ok) return;
+        const list = (await res.json()) as { id: string; status: Attachment["status"] }[];
+        const byId = new Map(list.map((s) => [s.id, s.status]));
+        setAttachments((prev) =>
+          prev.map((a) =>
+            byId.has(a.id) ? { ...a, status: byId.get(a.id)! } : a,
+          ),
+        );
+      } catch {
+        /* reintenta en el siguiente tick */
+      }
+    }, 3000);
+    return () => clearInterval(t);
+  }, [attachments]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -186,6 +258,39 @@ export default function ChatWindow({
       </div>
 
       <div className={styles.composerWrap}>
+        {attachments.length > 0 && (
+          <div className={styles.attachments}>
+            {attachments.map((a) => (
+              <span key={a.id} className={styles.attachment}>
+                {a.status === "ready" ? (
+                  <CheckCircle2 size={14} className={styles.attReady} />
+                ) : a.status === "error" ? (
+                  <AlertCircle size={14} className={styles.attError} />
+                ) : (
+                  <Loader2 size={14} className={styles.attSpin} />
+                )}
+                <span className={styles.attName}>{a.name}</span>
+                <span className={styles.attStatus}>
+                  {a.status === "ready"
+                    ? "listo"
+                    : a.status === "error"
+                      ? "error"
+                      : "procesando…"}
+                </span>
+                <button
+                  type="button"
+                  className={styles.attClose}
+                  aria-label="Quitar de la lista"
+                  onClick={() =>
+                    setAttachments((p) => p.filter((x) => x.id !== a.id))
+                  }
+                >
+                  <X size={13} />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
         <form
           className={styles.composer}
           onSubmit={(e) => {
@@ -193,6 +298,26 @@ export default function ChatWindow({
             send(input);
           }}
         >
+          <input
+            ref={fileRef}
+            type="file"
+            accept={UPLOAD_ACCEPT}
+            multiple
+            hidden
+            onChange={(e) => {
+              if (e.target.files?.length) handleAttach(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            className={styles.tool}
+            onClick={() => fileRef.current?.click()}
+            title="Adjuntar documento (PDF, DOCX, TXT, MD)"
+            aria-label="Adjuntar documento"
+          >
+            <Paperclip size={18} />
+          </button>
           <button
             type="button"
             className={`${styles.tool} ${webSearch ? styles.toolOn : ""}`}
