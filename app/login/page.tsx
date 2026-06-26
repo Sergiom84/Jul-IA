@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import Logo from "../chat/_components/Logo";
 import { getBrowserClient } from "@/src/lib/supabase/browser";
 import { sanitizeNextPath } from "@/src/lib/safe-path";
@@ -28,6 +29,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   function switchMode(next: "signin" | "signup") {
     setMode(next);
@@ -88,17 +90,10 @@ function LoginForm() {
         <div className={styles.brand}>
           <Logo size={44} />
           <span className={styles.brandText}>
-            <b>jul-IA</b>
+            <b>Jul-IA</b>
             <span>Asesor fiscal y laboral</span>
           </span>
         </div>
-
-        <h1 className={styles.title}>
-          {mode === "signin" ? "Inicia sesión" : "Crea tu cuenta"}
-        </h1>
-        <p className={styles.subtitle}>
-          Accede para consultar tu documentación de forma privada.
-        </p>
 
         {error && <div className={styles.error}>{error}</div>}
         {notice && <div className={styles.notice}>{notice}</div>}
@@ -116,7 +111,6 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@correo.com"
             />
           </div>
 
@@ -124,19 +118,31 @@ function LoginForm() {
             <label className={styles.label} htmlFor="password">
               Contraseña
             </label>
-            <input
-              id="password"
-              className="input"
-              type="password"
-              autoComplete={
-                mode === "signin" ? "current-password" : "new-password"
-              }
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className={styles.passwordWrap}>
+              <input
+                id="password"
+                className="input"
+                type={showPassword ? "text" : "password"}
+                autoComplete={
+                  mode === "signin" ? "current-password" : "new-password"
+                }
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.eyeBtn}
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={
+                  showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                }
+                title={showPassword ? "Ocultar" : "Mostrar"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {mode === "signup" && (
@@ -147,13 +153,12 @@ function LoginForm() {
               <input
                 id="confirmPassword"
                 className="input"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 required
                 minLength={6}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
               />
             </div>
           )}
