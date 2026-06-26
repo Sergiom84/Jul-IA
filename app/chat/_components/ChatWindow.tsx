@@ -60,7 +60,9 @@ export default function ChatWindow({
   const [webSearch, setWebSearch] = useState(true);
 
   useEffect(() => {
+    // Lee la preferencia persistida tras montar (evita desajuste de hidratación).
     const saved = localStorage.getItem("julia-websearch");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (saved !== null) setWebSearch(saved === "1");
   }, []);
 
