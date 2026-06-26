@@ -55,7 +55,21 @@ export default function ChatWindow({
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [webSearch, setWebSearch] = useState(false);
+  // Búsqueda web ON por defecto (asesor que debe contrastar normativa vigente);
+  // recuerda la elección del usuario entre sesiones.
+  const [webSearch, setWebSearch] = useState(true);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("julia-websearch");
+    if (saved !== null) setWebSearch(saved === "1");
+  }, []);
+
+  const toggleWebSearch = () =>
+    setWebSearch((v) => {
+      const next = !v;
+      localStorage.setItem("julia-websearch", next ? "1" : "0");
+      return next;
+    });
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -321,7 +335,7 @@ export default function ChatWindow({
           <button
             type="button"
             className={`${styles.tool} ${webSearch ? styles.toolOn : ""}`}
-            onClick={() => setWebSearch((v) => !v)}
+            onClick={toggleWebSearch}
             aria-pressed={webSearch}
             title={
               webSearch
