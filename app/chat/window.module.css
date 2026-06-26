@@ -11,7 +11,9 @@
   z-index: 1;
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-5) var(--space-4);
+  /* Hueco arriba para la barra superior flotante. */
+  padding: calc(var(--header-height) + var(--safe-top) + var(--space-2))
+    var(--space-4) var(--space-5);
 }
 /* En estado vacío dejamos pasar el puntero al océano del fondo. */
 .scrollEmpty {
@@ -219,23 +221,18 @@
 }
 
 /* --- Composer --- */
+/* El compositor flota sobre el océano (sin franja opaca) en todo el chat. */
 .composerWrap {
   position: relative;
   z-index: 1;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
+  background: transparent;
   padding: var(--space-3) var(--space-4);
   padding-bottom: calc(var(--space-3) + var(--safe-bottom));
 }
-/* En estado vacío el compositor flota sobre el océano (sin franja opaca). */
-.composerWrapEmpty {
-  border-top: none;
-  background: transparent;
-}
-.composerWrapEmpty .composer {
+.composerWrap .composer {
   box-shadow: 0 6px 24px rgba(4, 16, 30, 0.4);
 }
-.composerWrapEmpty .disclaimer {
+.composerWrap .disclaimer {
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 8px rgba(4, 16, 30, 0.6);
 }

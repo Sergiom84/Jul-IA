@@ -118,7 +118,11 @@ export default function ChatLayout({
       />
 
       <main className={styles.main}>
-        <header className={styles.topbar}>
+        <header
+          className={`${styles.topbar} ${
+            view === "chat" ? styles.topbarOcean : ""
+          }`}
+        >
           <button
             className={styles.hamburger}
             onClick={() => setSidebarOpen(true)}

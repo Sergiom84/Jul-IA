@@ -8,7 +8,6 @@ import {
   type SetStateAction,
 } from "react";
 import {
-  Scale,
   Send,
   FileText,
   Globe,
@@ -23,6 +22,7 @@ import remarkGfm from "remark-gfm";
 import type { Citation, Message } from "@/src/lib/types";
 import Waves from "./Waves";
 import Avatar from "./Avatar";
+import Logo from "./Logo";
 import QuickActions from "./QuickActions";
 import styles from "../window.module.css";
 
@@ -270,7 +270,8 @@ export default function ChatWindow({
 
   return (
     <div className={styles.window}>
-      {showEmpty && <Waves className={styles.waves} />}
+      {/* El océano es el fondo permanente del chat (vacío y conversación). */}
+      <Waves className={styles.waves} />
       <div
         className={`${styles.scroll} ${showEmpty ? styles.scrollEmpty : ""}`}
         ref={scrollRef}
@@ -296,11 +297,7 @@ export default function ChatWindow({
         )}
       </div>
 
-      <div
-        className={`${styles.composerWrap} ${
-          showEmpty ? styles.composerWrapEmpty : ""
-        }`}
-      >
+      <div className={styles.composerWrap}>
         {attachments.length > 0 && (
           <div className={styles.attachments}>
             {attachments.map((a) => (
@@ -431,7 +428,7 @@ function MessageRow({
           isUser ? styles.avatarUser : styles.avatarAi
         }`}
       >
-        {isUser ? "Tú" : <Scale size={16} />}
+        {isUser ? "Tú" : <Logo size={30} />}
       </span>
       <div
         className={`${styles.bubble} ${

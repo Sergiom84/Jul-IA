@@ -1,8 +1,9 @@
 "use client";
 
-import { Scale, Plus, FileText, MessageSquare, Trash2, LogOut } from "lucide-react";
+import { Plus, FileText, MessageSquare, Trash2, LogOut } from "lucide-react";
 import type { Conversation } from "@/src/lib/types";
 import { signOut } from "../actions";
+import Logo from "./Logo";
 import styles from "../chat.module.css";
 
 export default function Sidebar({
@@ -29,9 +30,7 @@ export default function Sidebar({
   return (
     <aside className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`}>
       <div className={styles.sidebarHeader}>
-        <span className={styles.logo}>
-          <Scale size={18} />
-        </span>
+        <Logo size={36} />
         <span className={styles.logoText}>
           <b>jul-IA</b>
           <span>Asesor fiscal y laboral</span>

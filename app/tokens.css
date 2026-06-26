@@ -3,26 +3,26 @@
    Paleta sobria y profesional para un asesor fiscal/laboral.
    ============================================================ */
 :root {
-  /* Marca */
+  /* Marca (verde) */
   --brand-600: #0f6f5c;
   --brand-500: #138a72;
   --brand-400: #21a98c;
-  --brand-050: #e7f5f1;
+  --brand-050: #10241f;
 
-  --accent-600: #1d4ed8;
-  --accent-050: #e8eefc;
+  --accent-600: #3b82f6;
+  --accent-050: #15203a;
 
-  /* Neutros — Tema 2: TODO grisáceo (lienzo + barras + tarjetas), botón verde */
-  --bg: #dde2e8;
-  --surface: #eef1f5;
-  --surface-2: #e3e8ee;
-  --surface-3: #d6dce4;
-  --border: #cdd4dd;
-  --border-strong: #b4bcc8;
+  /* Neutros — Tema 2: tema OSCURO original (gris oscuro), botón verde */
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #1c232c;
+  --surface-3: #232c37;
+  --border: #2a323d;
+  --border-strong: #3a4452;
 
-  --text: #11161d;
-  --text-muted: #5b6573;
-  --text-subtle: #8a92a0;
+  --text: #e9edf2;
+  --text-muted: #9aa4b2;
+  --text-subtle: #6b7686;
   --on-brand: #ffffff;
 
   /* Estados */
@@ -52,10 +52,10 @@
   --radius-lg: 16px;
   --radius-pill: 999px;
 
-  /* Sombras */
-  --shadow-sm: 0 1px 2px rgba(17, 22, 29, 0.06);
-  --shadow-md: 0 4px 16px rgba(17, 22, 29, 0.08);
-  --shadow-lg: 0 12px 32px rgba(17, 22, 29, 0.14);
+  /* Sombras — Tema 2 oscuro (negras para dar profundidad) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
 
   /* Layout */
   --sidebar-width: 280px;
@@ -87,13 +87,13 @@
   --accent-600: #cb7892;
   --accent-050: #f6dde4;
 
-  /* Neutros — Tema 1: fondo blanco, acentos lila */
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #f4f1fb;
-  --surface-3: #ebe6f6;
-  --border: #e7e1f2;
-  --border-strong: #d6cdea;
+  /* Neutros — Tema 1: TODO rosa palo (lienzo + barras + tarjetas), sin blanco */
+  --bg: #f3d6de;
+  --surface: #fbe9ef;
+  --surface-2: #f5dde7;
+  --surface-3: #eed0db;
+  --border: #e8c9d4;
+  --border-strong: #d9b3c2;
 
   /* Texto — índigo profundo */
   --text: #1d1a30;
@@ -106,27 +106,9 @@
   --warning: #c5872b;
   --danger: #d4567f;
   --info: #6098d6;
-}
 
-/* El modo oscuro automático sólo aplica si no hay tema explícito. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface-2: #1c232c;
-    --surface-3: #232c37;
-    --border: #2a323d;
-    --border-strong: #3a4452;
-
-    --text: #e9edf2;
-    --text-muted: #9aa4b2;
-    --text-subtle: #6b7686;
-
-    --brand-050: #10241f;
-    --accent-050: #15203a;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
-  }
+  /* Sombras — Tema 1 claro (suaves sobre superficies blancas) */
+  --shadow-sm: 0 1px 2px rgba(17, 22, 29, 0.06);
+  --shadow-md: 0 4px 16px rgba(17, 22, 29, 0.08);
+  --shadow-lg: 0 12px 32px rgba(17, 22, 29, 0.14);
 }

@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Scale } from "lucide-react";
+import Logo from "../chat/_components/Logo";
 import { getBrowserClient } from "@/src/lib/supabase/browser";
 import { sanitizeNextPath } from "@/src/lib/safe-path";
 import { registerUser } from "./actions";
@@ -86,9 +86,7 @@ function LoginForm() {
     <div className={styles.wrap}>
       <div className={styles.card}>
         <div className={styles.brand}>
-          <span className={styles.logo}>
-            <Scale size={22} />
-          </span>
+          <Logo size={44} />
           <span className={styles.brandText}>
             <b>jul-IA</b>
             <span>Asesor fiscal y laboral</span>

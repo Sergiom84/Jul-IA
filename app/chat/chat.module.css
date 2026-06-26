@@ -50,6 +50,10 @@
 }
 .newBtn {
   width: 100%;
+  /* Alinea icono+texto a la izquierda, igual que "Subir documentos". */
+  justify-content: flex-start;
+  gap: var(--space-3);
+  padding-left: 12px;
 }
 .navBtn {
   width: 100%;
@@ -151,6 +155,7 @@
 
 /* ---------------- Main ---------------- */
 .main {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -167,6 +172,41 @@
   padding-top: var(--safe-top);
   border-bottom: 1px solid var(--border);
   background: var(--surface);
+}
+/* En el chat la barra superior flota transparente sobre el océano. */
+.topbarOcean {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-header);
+  border-bottom: none;
+  background: transparent;
+  pointer-events: none;
+}
+.topbarOcean .hamburger,
+.topbarOcean .topActions {
+  pointer-events: auto;
+}
+.topbarOcean .topTitle {
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(4, 16, 30, 0.6);
+}
+.topbarOcean .iconBtn,
+.topbarOcean .hamburger {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(6px);
+}
+.topbarOcean .iconBtn:hover,
+.topbarOcean .hamburger:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.topbarOcean .iconBtn[aria-pressed="true"] {
+  background: var(--brand-600);
+  border-color: var(--brand-400);
+  color: #fff;
 }
 .hamburger {
   display: none;
