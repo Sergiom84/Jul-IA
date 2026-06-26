@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { UploadCloud, FileText, Globe, Trash2, Link as LinkIcon } from "lucide-react";
+import {
+  UploadCloud,
+  FileText,
+  Globe,
+  Trash2,
+  Link as LinkIcon,
+  RotateCw,
+} from "lucide-react";
 import type { Source } from "@/src/lib/types";
 import styles from "../documents.module.css";
 
@@ -101,6 +108,14 @@ export default function DocumentsPanel() {
     setSources((prev) => prev.filter((s) => s.id !== id));
   }
 
+  async function retry(id: string) {
+    setSources((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: "uploaded", error: null } : s)),
+    );
+    await fetch(`/api/sources?id=${id}`, { method: "PATCH" });
+    await load();
+  }
+
   return (
     <div className={styles.panel}>
       <div className={styles.inner}>
@@ -188,6 +203,16 @@ export default function DocumentsPanel() {
               <span className={`${styles.badge} ${STATUS_CLASS[s.status]}`}>
                 {STATUS_LABEL[s.status]}
               </span>
+              {s.status === "error" && (
+                <button
+                  className={styles.itemDelete}
+                  onClick={() => retry(s.id)}
+                  aria-label="Reintentar"
+                  title="Reintentar análisis"
+                >
+                  <RotateCw size={16} />
+                </button>
+              )}
               <button
                 className={styles.itemDelete}
                 onClick={() => remove(s.id)}

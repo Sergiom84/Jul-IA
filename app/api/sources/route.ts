@@ -127,6 +127,27 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(data);
 }
 
+// PATCH ?id= : reprocesa una fuente (p.ej. tras un error). La reencola y dispara.
+export async function PATCH(request: NextRequest) {
+  const user = await getUser();
+  if (!user) return new NextResponse("No autenticado", { status: 401 });
+
+  const id = request.nextUrl.searchParams.get("id");
+  if (!id) return new NextResponse("Falta id", { status: 400 });
+
+  const supabase = await getServerClient();
+  const { data, error } = await supabase
+    .from("sources")
+    .update({ status: "uploaded", error: null, next_attempt_at: null })
+    .eq("id", id)
+    .select(SOURCE_SELECT)
+    .single();
+  if (error) return new NextResponse(error.message, { status: 500 });
+
+  after(() => processSourceInline(id));
+  return NextResponse.json(data);
+}
+
 // DELETE ?id= : borra fuente (chunks por cascade) + objeto en Storage.
 export async function DELETE(request: NextRequest) {
   const user = await getUser();
