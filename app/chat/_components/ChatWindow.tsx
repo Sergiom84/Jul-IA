@@ -21,12 +21,18 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Citation, Message } from "@/src/lib/types";
+import Waves from "./Waves";
+import Avatar from "./Avatar";
+import QuickActions from "./QuickActions";
 import styles from "../window.module.css";
 
-const SUGGESTIONS = [
-  "¿Qué gastos puedo deducir como autónomo en el IRPF?",
-  "Resume las obligaciones de una nómina según el documento que subí.",
-  "¿Cuándo se presenta el modelo 303 y qué incluye?",
+// Saludo del estado vacío: cambia aleatoriamente en cada carga.
+const GREETINGS = [
+  "¿En qué puedo ayudarte?",
+  "¿Qué vas a solucionar hoy?",
+  "¿Cómo ha ido pilates?",
+  "Hoy es un gran día para ser feliz",
+  "Hola Julliett",
 ];
 
 const UPLOAD_ACCEPT = ".pdf,.docx,.txt,.md";
@@ -46,12 +52,16 @@ export default function ChatWindow({
   setMessages,
   ensureConversation,
   onActivity,
+  userEmail,
+  avatarUrl,
 }: {
   conversationId: string | null;
   messages: Message[];
   setMessages: Dispatch<SetStateAction<Message[]>>;
   ensureConversation: (firstMessage: string) => Promise<string>;
   onActivity: (id: string) => void;
+  userEmail: string | null;
+  avatarUrl: string | null;
 }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -73,6 +83,12 @@ export default function ChatWindow({
       return next;
     });
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  // Saludo aleatorio elegido tras montar (evita desajuste de hidratación).
+  const [greeting, setGreeting] = useState(GREETINGS[0]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
+  }, []);
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -141,6 +157,19 @@ export default function ChatWindow({
     if (!ta) return;
     ta.style.height = "auto";
     ta.style.height = Math.min(ta.scrollHeight, 180) + "px";
+  }
+
+  // Acciones rápidas: insertan (reemplazan) o añaden texto al cuadro y enfocan.
+  function applyTemplate(text: string, append: boolean) {
+    setInput((cur) => {
+      if (!append) return text;
+      const base = cur.trimEnd();
+      return base ? `${base}${text}` : text.trim();
+    });
+    requestAnimationFrame(() => {
+      taRef.current?.focus();
+      autoGrow();
+    });
   }
 
   async function send(text: string) {
@@ -241,27 +270,21 @@ export default function ChatWindow({
 
   return (
     <div className={styles.window}>
-      <div className={styles.scroll} ref={scrollRef}>
+      {showEmpty && <Waves className={styles.waves} />}
+      <div
+        className={`${styles.scroll} ${showEmpty ? styles.scrollEmpty : ""}`}
+        ref={scrollRef}
+      >
         {showEmpty ? (
           <div className={styles.empty}>
-            <span className={styles.emptyLogo}>
-              <Scale size={28} />
-            </span>
-            <h2 className={styles.emptyTitle}>¿En qué puedo ayudarte?</h2>
-            <p>
-              Asesor fiscal y laboral para España. Responde con base en tus
-              documentos y cita sus fuentes.
-            </p>
-            <div className={styles.suggestions}>
-              {SUGGESTIONS.map((s) => (
-                <button
-                  key={s}
-                  className={styles.suggestion}
-                  onClick={() => send(s)}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className={styles.emptyInner}>
+              <Avatar
+                src={avatarUrl}
+                email={userEmail}
+                size={56}
+                className={styles.emptyLogo}
+              />
+              <h2 className={styles.emptyTitle}>{greeting}</h2>
             </div>
           </div>
         ) : (
@@ -307,6 +330,10 @@ export default function ChatWindow({
             ))}
           </div>
         )}
+        <QuickActions
+          onInsert={(t) => applyTemplate(t, false)}
+          onAppend={(t) => applyTemplate(t, true)}
+        />
         <form
           className={styles.composer}
           onSubmit={(e) => {

@@ -1,4 +1,5 @@
 .window {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -6,9 +7,15 @@
 }
 
 .scroll {
+  position: relative;
+  z-index: 1;
   flex: 1;
   overflow-y: auto;
   padding: var(--space-5) var(--space-4);
+}
+/* En estado vacío dejamos pasar el puntero al océano del fondo. */
+.scrollEmpty {
+  pointer-events: none;
 }
 .thread {
   max-width: var(--composer-max);
@@ -166,57 +173,55 @@
   }
 }
 
+/* Fondo: océano a sangre que cubre toda el área del chat. */
+.waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  touch-action: manipulation;
+  z-index: 0;
+}
+
 /* --- Estado vacío --- */
 .empty {
-  flex: 1;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: var(--space-3);
-  padding: var(--space-6);
-  color: var(--text-muted);
+}
+.emptyInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
 }
 .emptyLogo {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
   background: linear-gradient(135deg, var(--brand-400), var(--brand-600));
   color: #fff;
   display: grid;
   place-items: center;
+  font-weight: 700;
+  box-shadow: 0 4px 18px rgba(4, 16, 30, 0.35);
 }
 .emptyTitle {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--text);
+  color: #fff;
   margin: 0;
-}
-.suggestions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-  width: 100%;
-  max-width: 460px;
-}
-.suggestion {
-  text-align: left;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  font-size: 14px;
-  color: var(--text);
-}
-.suggestion:hover {
-  border-color: var(--brand-400);
-  background: var(--brand-050);
+  text-shadow: 0 1px 16px rgba(4, 16, 30, 0.55), 0 1px 3px rgba(4, 16, 30, 0.6);
 }
 
 /* --- Composer --- */
 .composerWrap {
+  position: relative;
+  z-index: 1;
   border-top: 1px solid var(--border);
   background: var(--surface);
   padding: var(--space-3) var(--space-4);
@@ -288,6 +293,68 @@
   font-size: 11px;
   color: var(--text-subtle);
   text-align: center;
+}
+
+/* --- Acciones rápidas (Redactar / Revisar / Citas) --- */
+.quickActions {
+  max-width: var(--composer-max);
+  margin: 0 auto var(--space-2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.qaGroup {
+  position: relative;
+}
+.quickAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.quickAction:hover {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--brand-400);
+}
+.qaBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+}
+.templatesPop {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: var(--z-drawer);
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.templateItem {
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-size: 14px;
+  color: var(--text);
+}
+.templateItem:hover {
+  background: var(--brand-050);
+  color: var(--brand-600);
 }
 
 /* --- Adjuntos en el chat --- */

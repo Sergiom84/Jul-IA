@@ -2,14 +2,18 @@
 
 import { useCallback, useState } from "react";
 import type { Conversation, Message } from "@/src/lib/types";
+import { LogOut } from "lucide-react";
 import {
   createConversation,
   deleteConversation,
   getMessages,
+  signOut,
 } from "../actions";
 import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
 import DocumentsPanel from "./DocumentsPanel";
+import ThemeToggle from "./ThemeToggle";
+import AvatarUploader from "./AvatarUploader";
 import styles from "../chat.module.css";
 
 type View = "chat" | "docs";
@@ -17,9 +21,11 @@ type View = "chat" | "docs";
 export default function ChatLayout({
   initialConversations,
   userEmail,
+  avatarUrl,
 }: {
   initialConversations: Conversation[];
   userEmail: string | null;
+  avatarUrl: string | null;
 }) {
   const [conversations, setConversations] =
     useState<Conversation[]>(initialConversations);
@@ -27,6 +33,7 @@ export default function ChatLayout({
   const [messages, setMessages] = useState<Message[]>([]);
   const [view, setView] = useState<View>("chat");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [avatar, setAvatar] = useState<string | null>(avatarUrl);
 
   const closeDrawer = useCallback(() => setSidebarOpen(false), []);
 
@@ -127,6 +134,25 @@ export default function ChatLayout({
                   "Conversación"
                 : "Nueva consulta"}
           </span>
+
+          <div className={styles.topActions}>
+            <ThemeToggle className={styles.iconBtn} />
+            <form action={signOut}>
+              <button
+                type="submit"
+                className={styles.iconBtn}
+                title="Cerrar sesión"
+                aria-label="Cerrar sesión"
+              >
+                <LogOut size={18} />
+              </button>
+            </form>
+            <AvatarUploader
+              avatarUrl={avatar}
+              email={userEmail}
+              onChange={setAvatar}
+            />
+          </div>
         </header>
 
         {view === "docs" ? (
@@ -139,6 +165,8 @@ export default function ChatLayout({
             setMessages={setMessages}
             ensureConversation={ensureConversation}
             onActivity={bumpConversation}
+            userEmail={userEmail}
+            avatarUrl={avatar}
           />
         )}
       </main>

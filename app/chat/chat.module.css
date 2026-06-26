@@ -177,11 +177,79 @@
   color: var(--text);
 }
 .topTitle {
+  flex: 1;
   font-weight: 600;
   font-size: 15px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Acciones del margen derecho: tema, cerrar sesión y foto de perfil. */
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+}
+.iconBtn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.iconBtn[aria-pressed="true"] {
+  background: var(--brand-050);
+  border-color: var(--brand-400);
+  color: var(--brand-600);
+}
+.topAvatar {
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--brand-400), var(--brand-600));
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.avatarBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.avatarBtn:disabled {
+  cursor: progress;
+}
+.avatarBusy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(4, 16, 30, 0.45);
+  color: #fff;
+}
+.avatarSpin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------------- Drawer (móvil) ---------------- */

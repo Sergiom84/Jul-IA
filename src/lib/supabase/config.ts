@@ -17,6 +17,8 @@ export const supabaseSecretKey =
 export const requireAuth = process.env.REQUIRE_AUTH !== "false";
 
 export const STORAGE_BUCKET = "julia-documents";
+// Bucket público para las fotos de perfil (lectura pública, escritura server-side).
+export const AVATAR_BUCKET = "julia-avatars";
 
 export function assertPublicConfig() {
   if (!supabaseUrl || !supabasePublishableKey) {

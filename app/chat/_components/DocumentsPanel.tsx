@@ -121,10 +121,6 @@ export default function DocumentsPanel() {
       <div className={styles.inner}>
         <div className={styles.head}>
           <h2>Documentos y fuentes</h2>
-          <p>
-            Sube tu documentación fiscal y laboral. jul-IA la analiza y la usa
-            para responder citando las fuentes.
-          </p>
         </div>
 
         <div

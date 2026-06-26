@@ -12,8 +12,8 @@
   --accent-600: #1d4ed8;
   --accent-050: #e8eefc;
 
-  /* Neutros */
-  --bg: #f6f7f9;
+  /* Neutros — Tema 2: fondo grisáceo, tarjetas blancas (el de antes) */
+  --bg: #e7eaef;
   --surface: #ffffff;
   --surface-2: #f1f3f6;
   --surface-3: #e7eaef;
@@ -71,8 +71,46 @@
   --z-header: 20;
 }
 
+/* ============================================================
+   Tema "Aurora Glass" — paleta pastel rosa palo · azul · lila.
+   Se activa con [data-theme="aurora"] en <html>; el tema por
+   defecto (verde sobrio) es el :root de arriba.
+   ============================================================ */
+[data-theme="aurora"] {
+  /* Marca = lila/violeta (acción primaria) */
+  --brand-600: #8364e0;
+  --brand-500: #7350d4;
+  --brand-400: #c3b1ee;
+  --brand-050: #ece5fb;
+
+  /* Acento = rosa palo */
+  --accent-600: #cb7892;
+  --accent-050: #f6dde4;
+
+  /* Neutros — Tema 1: fondo blanco, acentos lila */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f1fb;
+  --surface-3: #ebe6f6;
+  --border: #e7e1f2;
+  --border-strong: #d6cdea;
+
+  /* Texto — índigo profundo */
+  --text: #1d1a30;
+  --text-muted: #4a4663;
+  --text-subtle: #7a7691;
+  --on-brand: #ffffff;
+
+  /* Estados */
+  --success: #2f9e6c;
+  --warning: #c5872b;
+  --danger: #d4567f;
+  --info: #6098d6;
+}
+
+/* El modo oscuro automático sólo aplica si no hay tema explícito. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --bg: #0d1117;
     --surface: #161b22;
     --surface-2: #1c232c;

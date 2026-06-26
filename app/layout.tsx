@@ -29,6 +29,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        {/* Aplica el tema guardado antes del primer pintado (evita parpadeo). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{document.documentElement.dataset.theme=localStorage.getItem('julia-theme')||'aurora'}catch(e){document.documentElement.dataset.theme='aurora'}",
+          }}
+        />
+      </head>
       <body>
         {children}
         <ServiceWorkerRegister />

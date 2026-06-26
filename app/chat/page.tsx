@@ -16,10 +16,16 @@ export default async function ChatPage() {
     .select("id, title, created_at, updated_at")
     .order("updated_at", { ascending: false });
 
+  const meta = (user?.user_metadata ?? {}) as {
+    avatar_url?: string;
+    picture?: string;
+  };
+
   return (
     <ChatLayout
       initialConversations={(data ?? []) as Conversation[]}
       userEmail={user?.email ?? null}
+      avatarUrl={meta.avatar_url ?? meta.picture ?? null}
     />
   );
 }
