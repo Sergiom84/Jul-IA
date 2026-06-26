@@ -12,13 +12,13 @@
   --accent-600: #1d4ed8;
   --accent-050: #e8eefc;
 
-  /* Neutros — Tema 2: fondo grisáceo, tarjetas blancas (el de antes) */
-  --bg: #e7eaef;
-  --surface: #ffffff;
-  --surface-2: #f1f3f6;
-  --surface-3: #e7eaef;
-  --border: #dfe3ea;
-  --border-strong: #c7ccd6;
+  /* Neutros — Tema 2: TODO grisáceo (lienzo + barras + tarjetas), botón verde */
+  --bg: #dde2e8;
+  --surface: #eef1f5;
+  --surface-2: #e3e8ee;
+  --surface-3: #d6dce4;
+  --border: #cdd4dd;
+  --border-strong: #b4bcc8;
 
   --text: #11161d;
   --text-muted: #5b6573;

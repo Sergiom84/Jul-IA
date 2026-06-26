@@ -28,7 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    // El tema se aplica en <html> vía script antes de hidratar (data-theme),
+    // por eso suprimimos el aviso de hidratación de ese atributo.
+    <html lang="es" suppressHydrationWarning>
       <head>
         {/* Aplica el tema guardado antes del primer pintado (evita parpadeo). */}
         <script

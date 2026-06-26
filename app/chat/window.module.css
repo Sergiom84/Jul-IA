@@ -227,6 +227,18 @@
   padding: var(--space-3) var(--space-4);
   padding-bottom: calc(var(--space-3) + var(--safe-bottom));
 }
+/* En estado vacío el compositor flota sobre el océano (sin franja opaca). */
+.composerWrapEmpty {
+  border-top: none;
+  background: transparent;
+}
+.composerWrapEmpty .composer {
+  box-shadow: 0 6px 24px rgba(4, 16, 30, 0.4);
+}
+.composerWrapEmpty .disclaimer {
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 8px rgba(4, 16, 30, 0.6);
+}
 .composer {
   max-width: var(--composer-max);
   margin: 0 auto;

@@ -296,7 +296,11 @@ export default function ChatWindow({
         )}
       </div>
 
-      <div className={styles.composerWrap}>
+      <div
+        className={`${styles.composerWrap} ${
+          showEmpty ? styles.composerWrapEmpty : ""
+        }`}
+      >
         {attachments.length > 0 && (
           <div className={styles.attachments}>
             {attachments.map((a) => (
